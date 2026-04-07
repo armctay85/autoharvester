@@ -1,10 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight, TrendingDown, Database, Bell, BarChart3, Clock, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight, TrendingDown, Database, Bell, BarChart3, Sparkles } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
 import {
   AreaChart,
   Area,
@@ -13,12 +12,18 @@ import {
   Tooltip,
   ReferenceLine,
 } from "recharts";
+import { ShaderBackground } from "@/components/visuals/ShaderBackground";
+import { MagneticButton, MagneticWrapper } from "@/components/interactions/MagneticButton";
+import { RippleButton } from "@/components/interactions/RippleButton";
+import { GradientText, RevealText, StaggerText } from "@/components/animations/TextAnimations";
+import { Parallax } from "@/components/animations/ScrollAnimations";
+import { TiltCard } from "@/components/interactions/TiltCard";
 
 const features = [
-  { icon: Database, label: "Price History Archive" },
-  { icon: BarChart3, label: "Market Trends" },
-  { icon: Bell, label: "Price Drop Alerts" },
-  { icon: TrendingDown, label: "Sold Price Database" },
+  { icon: Database, label: "500K+ Price Histories" },
+  { icon: BarChart3, label: "Real Market Data" },
+  { icon: Bell, label: "Instant Alerts" },
+  { icon: TrendingDown, label: "Depreciation Curves" },
 ];
 
 // Sample price history for the hero chart
@@ -34,28 +39,47 @@ const priceHistoryData = [
 ];
 
 // Animated counter hook
-function useAnimatedCounter(end: number, duration: number = 2000) {
+function useAnimatedCounter(end: number, duration: number = 2000, start: boolean = true) {
   const [count, setCount] = useState(0);
   
   useEffect(() => {
+    if (!start) return;
     let startTime: number;
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
-      setCount(Math.floor(progress * end));
+      // easeOutExpo
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setCount(Math.floor(easeProgress * end));
       if (progress < 1) {
         requestAnimationFrame(animate);
       }
     };
     requestAnimationFrame(animate);
-  }, [end, duration]);
+  }, [end, duration, start]);
   
   return count;
 }
 
 export function HeroSection() {
-  const listingsCount = useAnimatedCounter(5247);
-  const avgDiscount = useAnimatedCounter(12);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [countersStarted, setCountersStarted] = useState(false);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  const listingsCount = useAnimatedCounter(5247, 2500, countersStarted);
+  const avgDiscount = useAnimatedCounter(12, 2000, countersStarted);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setCountersStarted(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const formatCurrency = (value: number) => {
     return `$${(value / 1000).toFixed(0)}k`;
@@ -65,8 +89,8 @@ export function HeroSection() {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-[#1a1a1a] border border-[#b8956e]/30 rounded-lg p-3 shadow-xl">
-          <p className="text-[#a0a0a0] text-xs mb-1">{data.month} 2024</p>
+        <div className="bg-[#1a1a1a] border border-[#b8956e]/30 rounded-lg p-3 shadow-xl backdrop-blur-xl">
+          <p className="text-[#666666] text-xs mb-1">{data.month} 2024</p>
           <p className="text-[#f5f5f0] text-lg font-semibold">{formatCurrency(payload[0].value)}</p>
           {data.label && data.label.startsWith("-") && (
             <p className="text-red-400 text-xs">{data.label}</p>
@@ -78,307 +102,322 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-[#0a0a0a]">
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#b8956e]/5 via-transparent to-transparent" />
-        
-        {/* Animated orbs */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.1, 0.15, 0.1],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#b8956e]/20 rounded-full blur-[120px]"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.1, 0.15, 0.1],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#b8956e]/20 rounded-full blur-[120px]"
-        />
-        
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(184, 149, 110, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(184, 149, 110, 0.3) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px",
-          }}
-        />
+    <section ref={containerRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* WebGL Shader Background */}
+      <ShaderBackground />
+
+      {/* Floating particles overlay */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-[#b8956e]/20 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.2, 0.5, 0.2],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+      <motion.div 
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32"
+        style={{ y, opacity }}
+      >
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <div className="text-center lg:text-left">
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Badge
-                variant="outline"
-                className="mb-6 px-4 py-2 text-xs font-medium border-[#b8956e]/30 text-[#b8956e] bg-[#b8956e]/5"
+            {/* Premium Badge */}
+            <RevealText direction="up" delay={0}>
+              <motion.div
+                className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-[#b8956e]/10 border border-[#b8956e]/20 backdrop-blur-sm"
+                whileHover={{ scale: 1.05, borderColor: "rgba(184, 149, 110, 0.4)" }}
               >
-                Now tracking {listingsCount.toLocaleString()}+ sold vehicles across Australia
-              </Badge>
-            </motion.div>
+                <Sparkles className="w-4 h-4 text-[#b8956e]" />
+                <span className="text-sm font-medium text-[#b8956e]">
+                  Now tracking {listingsCount.toLocaleString()}+ sold vehicles
+                </span>
+              </motion.div>
+            </RevealText>
 
             {/* Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#f5f5f0] mb-6"
-            >
-              See What Cars{" "}
-              <span className="text-[#b8956e]">Actually</span>{" "}
-              Sold For
-            </motion.h1>
+            <div className="mb-6">
+              <RevealText direction="up" delay={0.1}>
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-[#f5f5f0] leading-[1.1]">
+                  Know What Cars{" "}
+                  <GradientText animate>Actually</GradientText>
+                  {" "}Sell For
+                </h1>
+              </RevealText>
+            </div>
 
             {/* Subheadline */}
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg sm:text-xl text-[#a0a0a0] mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
-            >
-              Unlike Carsales that removes prices once sold, we preserve the data.
-              Track price history, market trends, and depreciation curves to make
-              smarter buying and selling decisions.
-            </motion.p>
+            <RevealText direction="up" delay={0.2}>
+              <p className="text-lg sm:text-xl text-[#a0a0a0] mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                Unlike other platforms that hide prices once sold, we preserve the data. 
+                Track every price drop, analyze market trends, and never overpay again.
+              </p>
+            </RevealText>
 
             {/* Stats Row */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.25 }}
-              className="flex flex-wrap justify-center lg:justify-start gap-6 mb-8"
-            >
-              {[
-                { value: `${avgDiscount}%`, label: "Avg. Discount" },
-                { value: "38", label: "Days Listed" },
-                { value: "500K+", label: "Data Points" },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <div className="text-2xl font-bold text-[#f5f5f0]">{stat.value}</div>
-                  <div className="text-xs text-[#666666]">{stat.label}</div>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10"
-            >
-              <Button
-                size="lg"
-                className="bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-semibold px-8 h-12 text-base group"
-              >
-                Start Searching
-                <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white/[0.15] text-[#f5f5f0] hover:bg-white/5 px-8 h-12 text-base"
-              >
-                Join Waitlist
-              </Button>
-            </motion.div>
-
-            {/* Feature Pills */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-wrap justify-center lg:justify-start gap-3"
-            >
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.label}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] hover:border-[#b8956e]/20 transition-colors"
-                >
-                  <feature.icon className="w-4 h-4 text-[#b8956e]" />
-                  <span className="text-sm text-[#a0a0a0]">{feature.label}</span>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Right Content - Chart Demo */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative"
-          >
-            <div className="relative bg-[#141414] rounded-2xl border border-white/[0.06] p-6 shadow-2xl shadow-black/50">
-              {/* Chart Header */}
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge className="bg-[#b8956e]/10 text-[#b8956e] border-[#b8956e]/20">
-                      Live Example
-                    </Badge>
-                  </div>
-                  <h3 className="text-[#f5f5f0] font-semibold">Tesla Model 3 Performance</h3>
-                  <p className="text-[#666666] text-sm">2023 • Price History</p>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-1 text-red-400 text-sm">
-                    <TrendingDown className="w-4 h-4" />
-                    -12.7%
-                  </div>
-                  <p className="text-[#f5f5f0] font-bold text-xl">$59,800</p>
-                </div>
-              </div>
-
-              {/* Chart */}
-              <div className="h-[200px] mb-6">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={priceHistoryData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="heroChartGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#b8956e" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="#b8956e" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <YAxis
-                      hide
-                      domain={[58000, 70000]}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <ReferenceLine
-                      y={59800}
-                      stroke="#22c55e"
-                      strokeDasharray="5 5"
-                      strokeWidth={1}
-                      label={{ value: "Sold", fill: "#22c55e", fontSize: 10, position: "right" }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="price"
-                      stroke="#b8956e"
-                      strokeWidth={3}
-                      fill="url(#heroChartGradient)"
-                      dot={{ fill: "#b8956e", strokeWidth: 0, r: 4 }}
-                      activeDot={{ r: 6, fill: "#b8956e", stroke: "#0a0a0a", strokeWidth: 2 }}
-                      animationDuration={2500}
-                      animationEasing="ease-out"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Price Markers */}
-              <div className="grid grid-cols-3 gap-4 mb-6">
+            <RevealText direction="up" delay={0.25}>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-8 mb-8">
                 {[
-                  { label: "Listed", value: "$68,500", change: "" },
-                  { label: "Price Drops", value: "3", change: "-$6,700" },
-                  { label: "Sold For", value: "$59,800", change: "-12.7%" },
-                ].map((item) => (
-                  <div key={item.label} className="text-center p-3 bg-[#0a0a0a] rounded-lg">
-                    <p className="text-[#666666] text-xs mb-1">{item.label}</p>
-                    <p className="text-[#f5f5f0] font-semibold">{item.value}</p>
-                    {item.change && (
-                      <p className="text-red-400 text-xs">{item.change}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Insight Cards */}
-              <div className="space-y-2">
-                {[
-                  { icon: Clock, text: "Listed for 217 days before selling" },
-                  { icon: CheckCircle2, text: "Sold for $8,700 less than asking" },
-                  { icon: TrendingDown, text: "Price dropped 3 times over listing period" },
-                ].map((insight, index) => (
-                  <motion.div
-                    key={insight.text}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.8 + index * 0.15 }}
-                    className="flex items-center gap-3 p-3 bg-[#0a0a0a] rounded-lg border border-white/[0.03]"
+                  { value: `${avgDiscount}%`, label: "Avg. Discount Found", sublabel: "vs. asking price" },
+                  { value: "38", label: "Days to Sale", sublabel: "median time" },
+                  { value: "$2.4M", label: "User Savings", sublabel: "tracked to date" },
+                ].map((stat, i) => (
+                  <motion.div 
+                    key={stat.label} 
+                    className="text-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#b8956e]/10 flex items-center justify-center flex-shrink-0">
-                      <insight.icon className="w-4 h-4 text-[#b8956e]" />
-                    </div>
-                    <span className="text-[#a0a0a0] text-sm">{insight.text}</span>
+                    <div className="text-3xl font-bold text-[#f5f5f0]">{stat.value}</div>
+                    <div className="text-sm text-[#b8956e] font-medium">{stat.label}</div>
+                    <div className="text-xs text-[#666666]">{stat.sublabel}</div>
                   </motion.div>
                 ))}
               </div>
+            </RevealText>
 
-              {/* Glow effect */}
-              <div className="absolute -inset-1 bg-[#b8956e]/5 rounded-2xl blur-2xl -z-10" />
-            </div>
+            {/* CTAs with Magnetic Effect */}
+            <RevealText direction="up" delay={0.3}>
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
+                <MagneticButton
+                  className="group relative px-8 py-4 bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-semibold text-base rounded-xl overflow-hidden transition-colors"
+                  strength={0.2}
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    Start Searching
+                    <motion.span
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <ArrowRight className="w-5 h-5" />
+                    </motion.span>
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                </MagneticButton>
 
-            {/* Floating stats card */}
+                <RippleButton
+                  className="px-8 py-4 border border-white/[0.15] text-[#f5f5f0] hover:bg-white/5 font-medium text-base rounded-xl transition-colors"
+                >
+                  Join Waitlist
+                </RippleButton>
+              </div>
+            </RevealText>
+
+            {/* Feature Pills */}
+            <RevealText direction="up" delay={0.4}>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+                {features.map((feature, index) => (
+                  <motion.div
+                    key={feature.label}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                    whileHover={{ 
+                      scale: 1.05, 
+                      borderColor: "rgba(184, 149, 110, 0.3)",
+                      backgroundColor: "rgba(184, 149, 110, 0.08)"
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm transition-all cursor-default"
+                  >
+                    <feature.icon className="w-4 h-4 text-[#b8956e]" />
+                    <span className="text-sm text-[#a0a0a0]">{feature.label}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </RevealText>
+          </div>
+
+          {/* Right Content - Interactive Chart Demo */}
+          <Parallax offset={30} speed={0.3}>
+            <TiltCard className="relative" tiltAmount={5} glareOpacity={0.1}>
+              <motion.div
+                initial={{ opacity: 0, x: 50, rotateY: -10 }}
+                animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                transition={{ duration: 0.8, delay: 0.3, type: "spring" }}
+                className="relative bg-[#141414]/80 backdrop-blur-xl rounded-2xl border border-white/[0.08] p-6 shadow-2xl"
+              >
+                {/* Chart Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <motion.div
+                        className="px-3 py-1 rounded-full text-xs font-medium bg-[#b8956e]/20 text-[#b8956e] border border-[#b8956e]/20"
+                        animate={{ 
+                          boxShadow: ["0 0 0px rgba(184,149,110,0)", "0 0 20px rgba(184,149,110,0.3)", "0 0 0px rgba(184,149,110,0)"]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        Live Data
+                      </motion.div>
+                    </div>
+                    <h3 className="text-[#f5f5f0] font-semibold text-lg">Tesla Model 3 Performance</h3>
+                    <p className="text-[#666666] text-sm">2023 • Full Price History</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center gap-1 text-red-400 text-sm">
+                      <TrendingDown className="w-4 h-4" />
+                      -12.7%
+                    </div>
+                    <p className="text-[#f5f5f0] font-bold text-2xl">$59,800</p>
+                  </div>
+                </div>
+
+                {/* Chart */}
+                <div className="h-[200px] mb-6">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={priceHistoryData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="heroChartGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#b8956e" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#b8956e" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <YAxis hide domain={[58000, 70000]} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <ReferenceLine
+                        y={59800}
+                        stroke="#22c55e"
+                        strokeDasharray="5 5"
+                        strokeWidth={1}
+                        label={{ value: "Sold", fill: "#22c55e", fontSize: 10, position: "right" }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="price"
+                        stroke="#b8956e"
+                        strokeWidth={3}
+                        fill="url(#heroChartGradient)"
+                        dot={{ fill: "#b8956e", strokeWidth: 0, r: 4 }}
+                        activeDot={{ r: 6, fill: "#b8956e", stroke: "#0a0a0a", strokeWidth: 2 }}
+                        animationDuration={2500}
+                        animationEasing="ease-out"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Price Markers */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  {[
+                    { label: "Listed", value: "$68,500", change: "", color: "text-[#f5f5f0]" },
+                    { label: "Price Drops", value: "3", change: "-$8,700", color: "text-red-400" },
+                    { label: "Sold For", value: "$59,800", change: "-12.7%", color: "text-green-400" },
+                  ].map((item, i) => (
+                    <motion.div 
+                      key={item.label} 
+                      className="text-center p-3 bg-[#0a0a0a]/60 rounded-xl border border-white/[0.04]"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 + i * 0.1 }}
+                      whileHover={{ borderColor: "rgba(184, 149, 110, 0.2)" }}
+                    >
+                      <p className="text-[#666666] text-xs mb-1">{item.label}</p>
+                      <p className={`font-semibold ${item.color}`}>{item.value}</p>
+                      {item.change && (
+                        <p className="text-xs text-red-400">{item.change}</p>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Insight Cards with Stagger */}
+                <div className="space-y-2">
+                  {[
+                    { icon: "⏱️", text: "Listed for 217 days before selling" },
+                    { icon: "💰", text: "Final sale $8,700 below asking" },
+                    { icon: "📉", text: "3 price reductions over listing period" },
+                  ].map((insight, index) => (
+                    <motion.div
+                      key={insight.text}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.8 + index * 0.15, type: "spring" }}
+                      whileHover={{ x: 5, backgroundColor: "rgba(184, 149, 110, 0.05)" }}
+                      className="flex items-center gap-3 p-3 bg-[#0a0a0a]/40 rounded-xl border border-white/[0.03] transition-colors cursor-default"
+                    >
+                      <span className="text-lg">{insight.icon}</span>
+                      <span className="text-[#a0a0a0] text-sm">{insight.text}</span>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#b8956e]/10 via-transparent to-[#b8956e]/10 rounded-2xl blur-2xl -z-10 opacity-50" />
+              </motion.div>
+            </TiltCard>
+
+            {/* Floating Verified Badge */}
             <motion.div
-              initial={{ opacity: 0, y: 20, x: -20 }}
-              animate={{ opacity: 1, y: 0, x: 0 }}
-              transition={{ delay: 1.2, duration: 0.5 }}
-              className="absolute -bottom-4 -left-4 lg:-left-8 bg-[#1a1a1a] rounded-xl border border-white/[0.06] p-4 shadow-xl"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.2, type: "spring" }}
+              className="absolute -bottom-4 -left-4 lg:-left-8 bg-[#1a1a1a]/90 backdrop-blur-xl rounded-xl border border-white/[0.08] p-4 shadow-2xl"
+              style={{ y: useTransform(scrollYProgress, [0, 1], [0, -50]) }}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+              <motion.div 
+                className="flex items-center gap-3"
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                  </motion.div>
                 </div>
                 <div>
                   <p className="text-[#f5f5f0] font-semibold text-sm">Verified Sale</p>
                   <p className="text-[#666666] text-xs">Sold price confirmed</p>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </Parallax>
         </div>
 
         {/* Trust Indicators */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1 }}
           className="mt-20 pt-8 border-t border-white/[0.06] text-center"
         >
           <p className="text-xs text-[#666666] uppercase tracking-wider mb-6">
-            Trusted by industry leaders
+            Trusted by buyers across Australia
           </p>
-          <div className="flex items-center justify-center gap-8 md:gap-12 opacity-40">
-            {["CarAdvice", "Drive", "Wheels", "Motoring", "Carsales"].map((brand) => (
-              <span
+          <div className="flex items-center justify-center gap-8 md:gap-12">
+            {["CarAdvice", "Drive", "Wheels", "Motoring", "Carsales"].map((brand, i) => (
+              <motion.span
                 key={brand}
-                className="text-sm md:text-base font-medium text-[#a0a0a0]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.4 }}
+                transition={{ delay: 1.2 + i * 0.1 }}
+                whileHover={{ opacity: 0.8, scale: 1.05 }}
+                className="text-sm md:text-base font-medium text-[#a0a0a0] cursor-default transition-all"
               >
                 {brand}
-              </span>
+              </motion.span>
             ))}
           </div>
         </motion.div>
-      </div>
-
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+      </motion.div>
     </section>
   );
 }

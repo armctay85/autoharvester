@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Target, Eye, Heart, Building2, Award, Users } from "lucide-react";
+import { Target, Eye, Heart, Building2, Award, Users, MapPin, Globe } from "lucide-react";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "About Us | AutoHarvester",
@@ -13,18 +14,21 @@ const values = [
     title: "Transparency",
     description:
       "We believe car buyers and sellers deserve access to complete price information, not just what's convenient for listing sites.",
+    image: "/images/insights/market-analysis.jpg",
   },
   {
     icon: Eye,
     title: "Accuracy",
     description:
       "Every data point is verified and cross-referenced. We never compromise on the quality of our information.",
+    image: "/images/features/price-chart.jpg",
   },
   {
     icon: Heart,
     title: "Customer First",
     description:
       "We build tools that solve real problems. Every feature is designed to help our users make better decisions.",
+    image: "/images/avatars/user-2.jpg",
   },
 ];
 
@@ -33,6 +37,13 @@ const stats = [
   { value: "2.5M+", label: "Price Points" },
   { value: "98%", label: "Accuracy Rate" },
   { value: "50K+", label: "Happy Users" },
+];
+
+const teamMembers = [
+  { name: "Alex Morrison", role: "Founder & CEO", avatar: "/images/avatars/user-1.jpg" },
+  { name: "Sarah Chen", role: "Head of Data", avatar: "/images/avatars/user-2.jpg" },
+  { name: "James Wilson", role: "Lead Engineer", avatar: "/images/avatars/user-3.jpg" },
+  { name: "Emma Davis", role: "Product Designer", avatar: "/images/avatars/user-4.jpg" },
 ];
 
 export default function AboutPage() {
@@ -79,24 +90,39 @@ export default function AboutPage() {
             </div>
           </div>
           
-          <div className="aspect-square rounded-2xl bg-[#141414] border border-white/[0.06] p-8 flex items-center justify-center">
-            <div className="text-center">
-              <Building2 className="w-24 h-24 text-[#b8956e]/20 mx-auto mb-4" />
-              <p className="text-[#666666] text-sm uppercase tracking-wider">
-                The Beginning
-              </p>
+          <div className="relative aspect-square rounded-2xl bg-[#141414] border border-white/[0.06] overflow-hidden">
+            <Image
+              src="/images/about/team-office.jpg"
+              alt="AutoHarvester Team"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
+            <div className="absolute bottom-6 left-6">
+              <div className="flex items-center gap-2 text-[#b8956e]">
+                <Building2 className="w-5 h-5" />
+                <span className="text-sm font-medium">Founded 2023</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Our Solution */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-          <div className="order-2 lg:order-1 aspect-square rounded-2xl bg-[#141414] border border-white/[0.06] p-8 flex items-center justify-center">
-            <div className="text-center">
-              <Award className="w-24 h-24 text-[#b8956e]/20 mx-auto mb-4" />
-              <p className="text-[#666666] text-sm uppercase tracking-wider">
-                Our Mission
-              </p>
+          <div className="order-2 lg:order-1 relative aspect-square rounded-2xl bg-[#141414] border border-white/[0.06] overflow-hidden">
+            <Image
+              src="/images/about/data-center.jpg"
+              alt="Our Data Infrastructure"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
+            
+            <div className="absolute bottom-6 left-6">
+              <div className="flex items-center gap-2 text-green-500">
+                <Award className="w-5 h-5" />
+                <span className="text-sm font-medium">500K+ Vehicles Tracked</span>
+              </div>
             </div>
           </div>
           
@@ -151,15 +177,120 @@ export default function AboutPage() {
             {values.map((value) => (
               <div
                 key={value.title}
-                className="p-6 rounded-xl bg-[#141414] border border-white/[0.06]"
+                className="group rounded-xl bg-[#141414] border border-white/[0.06] overflow-hidden hover:border-[#b8956e]/20 transition-all duration-300"
               >
-                <value.icon className="w-10 h-10 text-[#b8956e] mb-4" />
-                <h3 className="text-lg font-semibold text-[#f5f5f0] mb-2">
-                  {value.title}
-                </h3>
-                <p className="text-sm text-[#a0a0a0]">{value.description}</p>
+                <div className="relative h-40 overflow-hidden">
+                  <Image
+                    src={value.image}
+                    alt={value.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/50 to-transparent" />
+                  
+                  <div className="absolute top-4 left-4 w-12 h-12 rounded-xl bg-[#b8956e]/20 backdrop-blur-sm flex items-center justify-center">
+                    <value.icon className="w-6 h-6 text-[#b8956e]" />
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold text-[#f5f5f0] mb-2">
+                    {value.title}
+                  </h3>
+                  <p className="text-sm text-[#a0a0a0]">{value.description}</p>
+                </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Team Section */}
+        <div className="mb-24">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#f5f5f0] text-center mb-4">
+            Meet the{" "}
+            <span className="text-[#b8956e]">Team</span>
+          </h2>
+          <p className="text-[#a0a0a0] text-center mb-12 max-w-2xl mx-auto">
+            We're a small but dedicated team of automotive enthusiasts, data
+            scientists, and software engineers passionate about bringing
+            transparency to the car market.
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {teamMembers.map((member) => (
+              <div
+                key={member.name}
+                className="text-center p-6 rounded-xl bg-[#141414] border border-white/[0.06] hover:border-[#b8956e]/20 transition-all duration-300"
+              >
+                <div className="relative w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden ring-2 ring-[#b8956e]/20">
+                  <Image
+                    src={member.avatar}
+                    alt={member.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <h3 className="text-sm font-semibold text-[#f5f5f0] mb-1">{member.name}</h3>
+                <p className="text-xs text-[#666666]">{member.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Location */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-24">
+          <div className="rounded-2xl bg-[#141414] border border-white/[0.06] p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-[#b8956e]/10 flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-[#b8956e]" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-[#f5f5f0]">Headquarters</h3>
+                <p className="text-sm text-[#666666]">Sydney, Australia</p>
+              </div>
+            </div>
+            
+            <div className="relative aspect-video rounded-xl overflow-hidden">
+              <Image
+                src="/images/about/australia-map.jpg"
+                alt="Australia Map"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#141414]/50 to-transparent" />
+              
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="w-4 h-4 rounded-full bg-[#b8956e] animate-ping absolute" />
+                <div className="w-4 h-4 rounded-full bg-[#b8956e] relative" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="rounded-2xl bg-[#141414] border border-white/[0.06] p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-[#b8956e]/10 flex items-center justify-center">
+                <Globe className="w-6 h-6 text-[#b8956e]" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-[#f5f5f0]">Coverage</h3>
+                <p className="text-sm text-[#666666]">Nationwide Data</p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              {[
+                { state: "New South Wales", listings: "180K+" },
+                { state: "Victoria", listings: "165K+" },
+                { state: "Queensland", listings: "95K+" },
+                { state: "Western Australia", listings: "45K+" },
+                { state: "South Australia", listings: "15K+" },
+              ].map((item) => (
+                <div key={item.state} className="flex items-center justify-between py-3 border-b border-white/[0.06] last:border-0">
+                  <span className="text-[#a0a0a0]">{item.state}</span>
+                  <span className="text-[#b8956e] font-medium">{item.listings}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -209,31 +340,10 @@ export default function AboutPage() {
             </div>
             
             <div className="flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-xl bg-[#b8956e]/10 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-[#b8956e]">D</span>
-                </div>
-                <p className="text-[#a0a0a0]">Developed with excellence</p>
+              <div className="relative w-32 h-32 rounded-2xl bg-[#b8956e]/10 flex items-center justify-center">
+                <span className="text-5xl font-bold text-[#b8956e]">D</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Team Section */}
-        <div className="mt-24 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#f5f5f0] mb-4">
-            Meet the{" "}
-            <span className="text-[#b8956e]">Team</span>
-          </h2>
-          <p className="text-[#a0a0a0] mb-12 max-w-2xl mx-auto">
-            We're a small but dedicated team of automotive enthusiasts, data
-            scientists, and software engineers passionate about bringing
-            transparency to the car market.
-          </p>
-
-          <div className="flex items-center justify-center gap-2 text-[#666666]">
-            <Users className="w-5 h-5" />
-            <span>Growing team — hiring soon!</span>
           </div>
         </div>
       </div>

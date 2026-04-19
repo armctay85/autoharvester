@@ -3,10 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
-import { SmoothScrollProvider } from "@/components/smooth-scroll/SmoothScrollProvider";
-import { ScrollProgressBar } from "@/components/smooth-scroll/ScrollProgress";
-import { GamificationProvider } from "@/contexts/GamificationContext";
-import { StickyPriceAlert, ExitIntentModal } from "@/components/viral";
+import { Providers } from "./Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,16 +54,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-[#0a0a0a] text-[#f5f5f0]`}
       >
-        <GamificationProvider>
-          <SmoothScrollProvider>
-            <ScrollProgressBar />
-            <Navigation />
-            <main>{children}</main>
-            <Footer />
-            <StickyPriceAlert />
-            <ExitIntentModal />
-          </SmoothScrollProvider>
-        </GamificationProvider>
+        <Providers>
+          <Navigation />
+          <main>{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

@@ -1,0 +1,34 @@
+Reposition to ownership intelligence layer + new SKU pages
+
+Implements the v2 strategy from AUDIT_AND_UPLIFT.md: away from
+"bigger Carsales" toward "Australia's car ownership intelligence
+layer" with four surfaces (consumer reports, concierge, dealer SaaS,
+partner/API).
+
+Strategy doc:
+- AUDIT_AND_UPLIFT.md: full deep audit + repositioning + 90-day
+  execution roadmap. Source of truth for v2.
+
+New SKU pages:
+- /vehicle-history-report: the $19 killer SKU. Sample report card,
+  what's included, comparison vs free PPSR, two CTAs hitting
+  /api/reports.
+- /concierge: DriveMate buying agent. 5-step explainer, worked
+  saving example, MVDA compliance footer.
+- /dealer: B2B SaaS landing. Mock Inventory IQ snapshot, floorplan-
+  cost proof points, DMS integrations strip, 3-tier pricing,
+  14-day no-card trial.
+
+Existing pages updated:
+- HeroSection: headline rewritten ("Australia's Ownership
+  Intelligence Layer"), subhead repositioned around the four
+  surfaces, CTAs point to /vehicle-history-report and /dealer,
+  "Trusted by" bar swapped from publisher logos (which awkwardly
+  included Carsales) to actual data sources (PPSR, NEVDIS, Pickles,
+  Manheim, Dealer Feeds).
+- Navigation: nav rewritten around the four surfaces. Header CTA
+  now "Get a $19 report".
+- pricing/page.tsx: rewritten end-to-end around the four surfaces.
+  Honest FAQ.
+- README: top-of-file repositioning callout, links to
+  AUDIT_AND_UPLIFT.md, new pages listed.

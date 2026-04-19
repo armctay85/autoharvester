@@ -154,9 +154,9 @@ export function HeroSection() {
             <div className="mb-6">
               <RevealText direction="up" delay={0.1}>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-[#f5f5f0] leading-[1.1]">
-                  Know What Cars{" "}
-                  <GradientText animate>Actually</GradientText>
-                  {" "}Sell For
+                  Australia&apos;s{" "}
+                  <GradientText animate>Ownership Intelligence</GradientText>
+                  {" "}Layer
                 </h1>
               </RevealText>
             </div>
@@ -164,8 +164,10 @@ export function HeroSection() {
             {/* Subheadline */}
             <RevealText direction="up" delay={0.2}>
               <p className="text-lg sm:text-xl text-[#a0a0a0] mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                Unlike other platforms that hide prices once sold, we preserve the data. 
-                Track every price drop, analyze market trends, and never overpay again.
+                Buy smarter, sell better, and run inventory like a market maker.
+                Vehicle history reports from <span className="text-[#f5f5f0] font-semibold">$19</span>,
+                a buying concierge that does the haggling for you, and a dealer dashboard
+                that tells you exactly where every car sits against the market.
               </p>
             </RevealText>
 
@@ -195,27 +197,31 @@ export function HeroSection() {
             {/* CTAs with Magnetic Effect */}
             <RevealText direction="up" delay={0.3}>
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
-                <MagneticButton
-                  className="group relative px-8 py-4 bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-semibold text-base rounded-xl overflow-hidden transition-colors"
-                  strength={0.2}
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    Start Searching
-                    <motion.span
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                      <ArrowRight className="w-5 h-5" />
-                    </motion.span>
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                </MagneticButton>
+                <a href="/vehicle-history-report" className="block">
+                  <MagneticButton
+                    className="group relative px-8 py-4 bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-semibold text-base rounded-xl overflow-hidden transition-colors"
+                    strength={0.2}
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      Get a Vehicle Report — $19
+                      <motion.span
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <ArrowRight className="w-5 h-5" />
+                      </motion.span>
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                  </MagneticButton>
+                </a>
 
-                <RippleButton
-                  className="px-8 py-4 border border-white/[0.15] text-[#f5f5f0] hover:bg-white/5 font-medium text-base rounded-xl transition-colors"
-                >
-                  Join Waitlist
-                </RippleButton>
+                <a href="/dealer" className="block">
+                  <RippleButton
+                    className="px-8 py-4 border border-white/[0.15] text-[#f5f5f0] hover:bg-white/5 font-medium text-base rounded-xl transition-colors"
+                  >
+                    Dealer dashboard demo
+                  </RippleButton>
+                </a>
               </div>
             </RevealText>
 
@@ -400,10 +406,10 @@ export function HeroSection() {
           className="mt-20 pt-8 border-t border-white/[0.06] text-center"
         >
           <p className="text-xs text-[#666666] uppercase tracking-wider mb-6">
-            Trusted by buyers across Australia
+            Built on legitimate AU data sources
           </p>
           <div className="flex items-center justify-center gap-8 md:gap-12">
-            {["CarAdvice", "Drive", "Wheels", "Motoring", "Carsales"].map((brand, i) => (
+            {["PPSR", "NEVDIS", "Pickles", "Manheim", "Dealer Feeds"].map((brand, i) => (
               <motion.span
                 key={brand}
                 initial={{ opacity: 0 }}

@@ -1,22 +1,40 @@
 # AutoHarvester Website
 
-A premium car market intelligence website for autoharvester.com.au.
+> **🚨 Strategy update — April 2026:** Repositioned from "Carsales for sold prices" to
+> **Australia's car ownership intelligence layer**. Read [`AUDIT_AND_UPLIFT.md`](./AUDIT_AND_UPLIFT.md)
+> first if you're new to the project — that's the source of truth for v2 strategy, schema, and SKUs.
 
 ## Overview
 
-AutoHarvester is the largest database of sold car prices in Australia. Unlike Carsales that removes prices once sold, we preserve price history, track market trends, and show depreciation curves.
+AutoHarvester is a four‑surface platform:
 
-## Pages Built
+1. **Consumer reports + watchlist** — a $19 Vehicle Intelligence Report (PPSR + NEVDIS + market
+   value + negotiation hint) and a $9/mo watchlist for active buyers.
+2. **DriveMate concierge** — a fixed‑fee + success‑fee buying agent.
+3. **Dealer SaaS** — $499 / $1,499 / $2,999 per month inventory intelligence for AU used‑car dealers.
+4. **Partner & API** — usage‑priced data feeds for insurance, finance, comparison, and novated lease.
 
-1. **Home** (`/`) - Hero, stats, how it works preview, features preview, pricing preview, testimonials, CTA
+We **do not scrape** Carsales / Gumtree / FB Marketplace. Data sources are PPSR, NEVDIS, public auctions
+(Pickles/Manheim/Grays/government), dealer feeds (from our SaaS customers), user contributions, and
+B2B partner feeds.
+
+## Pages
+
+### Killer SKU + new surfaces (v2)
+- **Vehicle Report** (`/vehicle-history-report`) — the $19 SKU page.
+- **Concierge** (`/concierge`) — DriveMate buying agent.
+- **Dealer** (`/dealer`) — B2B SaaS landing.
+- **Pricing** (`/pricing`) — four‑surface pricing.
+
+### Legacy / general
+1. **Home** (`/`) - Hero (rewritten), stats, demo search, how it works, features, pricing, testimonials, CTA
 2. **How It Works** (`/how-it-works`) - 4-step process explanation and comparison table
 3. **Features** (`/features`) - Full feature details with API documentation
-4. **Pricing** (`/pricing`) - 4-tier pricing with FAQ
-5. **Insights** (`/insights`) - Blog/insights page with newsletter signup
-6. **About** (`/about`) - Company story, values, Develoop connection
-7. **Contact** (`/contact`) - Contact form with info cards
-8. **Privacy** (`/privacy`) - Privacy policy
-9. **Terms** (`/terms`) - Terms of service
+4. **Insights** (`/insights`) - Blog/insights page with newsletter signup
+5. **About** (`/about`) - Company story, values, Develoop connection
+6. **Contact** (`/contact`) - Contact form with info cards
+7. **Privacy** (`/privacy`) - Privacy policy
+8. **Terms** (`/terms`) - Terms of service
 
 ## Tech Stack
 

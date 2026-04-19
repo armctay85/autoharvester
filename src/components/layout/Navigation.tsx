@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navLinks = [
-  { href: "/how-it-works", label: "How It Works" },
-  { href: "/features", label: "Features" },
+  { href: "/vehicle-history-report", label: "Vehicle Report" },
+  { href: "/concierge", label: "Concierge" },
+  { href: "/dealer", label: "Dealers" },
   { href: "/pricing", label: "Pricing" },
   { href: "/insights", label: "Insights" },
   { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
 ];
 
 export function Navigation() {
@@ -92,20 +92,24 @@ export function Navigation() {
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-[#a0a0a0] hover:text-[#f5f5f0] hover:bg-white/5"
-            >
-              <Search className="w-4 h-4 mr-2" />
-              Search
-            </Button>
-            <Button
-              size="sm"
-              className="bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-medium"
-            >
-              Get Started
-            </Button>
+            <Link href="/search">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[#a0a0a0] hover:text-[#f5f5f0] hover:bg-white/5"
+              >
+                <Search className="w-4 h-4 mr-2" />
+                Search
+              </Button>
+            </Link>
+            <Link href="/vehicle-history-report">
+              <Button
+                size="sm"
+                className="bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-medium"
+              >
+                Get a $19 report
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu */}
@@ -154,16 +158,20 @@ export function Navigation() {
                   </ul>
                 </nav>
                 <div className="p-4 border-t border-white/[0.08] space-y-3">
-                  <Button
-                    variant="outline"
-                    className="w-full border-white/[0.15] text-[#f5f5f0] hover:bg-white/5"
-                  >
-                    <Search className="w-4 h-4 mr-2" />
-                    Search Cars
-                  </Button>
-                  <Button className="w-full bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-medium">
-                    Get Started
-                  </Button>
+                  <Link href="/search" onClick={() => setIsOpen(false)}>
+                    <Button
+                      variant="outline"
+                      className="w-full border-white/[0.15] text-[#f5f5f0] hover:bg-white/5"
+                    >
+                      <Search className="w-4 h-4 mr-2" />
+                      Search Cars
+                    </Button>
+                  </Link>
+                  <Link href="/vehicle-history-report" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-medium">
+                      Get a $19 report
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </SheetContent>

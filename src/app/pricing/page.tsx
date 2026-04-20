@@ -43,7 +43,7 @@ const consumerSkus = [
       "Includes 1 report/mo (worth $19)",
       "Cancel anytime",
     ],
-    cta: { label: "Start watching", href: "/auth?tier=watchlist" },
+    cta: { label: "Start watching", href: "/subscribe/watchlist" },
     highlight: false,
   },
   {
@@ -57,7 +57,7 @@ const consumerSkus = [
       "Depreciation calculator",
       "Save up to 3 cars",
     ],
-    cta: { label: "Get started", href: "/auth" },
+    cta: { label: "Browse cars", href: "/cars" },
     highlight: false,
   },
 ];
@@ -90,7 +90,7 @@ const dealerSkus = [
       "Restock recommendations from auction inventory",
       "Up to 100 vehicles tracked",
     ],
-    cta: { label: "Book a demo", href: "/dealer?plan=edge" },
+    cta: { label: "Start trial", href: "/subscribe/dealer-edge" },
   },
   {
     name: "Inventory IQ",
@@ -104,7 +104,7 @@ const dealerSkus = [
       "Lead routing from the consumer surface",
       "Up to 500 vehicles tracked",
     ],
-    cta: { label: "Book a demo", href: "/dealer?plan=inventory" },
+    cta: { label: "Start trial", href: "/subscribe/inventory-iq" },
     popular: true,
   },
   {

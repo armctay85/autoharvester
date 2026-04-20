@@ -394,6 +394,31 @@ export async function startSubscriptionCheckout(
   return (await res.json()) as CheckoutResponse;
 }
 
+/**
+ * Guest subscription checkout — no auth required.
+ *
+ * The backend provisions (or links) a user row on webhook receipt, so the
+ * shopper only needs to type their email once on the marketing site. They
+ * can later set a password via the magic-link / reset flow.
+ */
+export async function startGuestSubscriptionCheckout(
+  email: string,
+  tier: SubscriptionTier,
+  interval: "month" | "year"
+): Promise<CheckoutResponse> {
+  const base = requireApiBase();
+  const res = await fetch(`${base}/api/subscription/checkout/guest`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ email, tier, interval }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Guest checkout failed (${res.status}): ${text}`);
+  }
+  return (await res.json()) as CheckoutResponse;
+}
+
 // ── Health / diagnostics ────────────────────────────────────────────────────
 
 export async function apiHealth(): Promise<{

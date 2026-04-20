@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ShieldCheck, FileText, Clock, AlertTriangle, Check, ArrowRight } from "lucide-react";
+import { ShieldCheck, FileText, Clock, AlertTriangle, Check } from "lucide-react";
+import { VehicleReportCheckoutForm } from "@/components/checkout/VehicleReportCheckoutForm";
 
 export const metadata: Metadata = {
   title: "Vehicle Intelligence Report — $19 | AutoHarvester",
@@ -41,7 +42,7 @@ export default function VehicleHistoryReportPage() {
               AU regulatory data and AU market pricing.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <ReportFormCTA />
+              <VehicleReportCheckoutForm />
             </div>
             <div className="flex items-center gap-6 mt-6 text-sm text-[#666666]">
               <span>✓ Delivered in seconds</span>
@@ -143,7 +144,9 @@ export default function VehicleHistoryReportPage() {
         <section className="text-center">
           <h2 className="text-3xl font-bold mb-3">Get your report now</h2>
           <p className="text-[#a0a0a0] mb-6">$19 — delivered in seconds, valid forever, satisfaction-guaranteed.</p>
-          <ReportFormCTA />
+          <div className="flex justify-center">
+            <VehicleReportCheckoutForm ctaLabel="Buy my report — $19" />
+          </div>
           <p className="mt-6 text-xs text-[#666666]">
             Need bulk pricing? <Link className="underline text-[#b8956e]" href="/dealer">Talk to dealer sales →</Link>
           </p>
@@ -159,24 +162,5 @@ function Row({ k, v, warn }: { k: string; v: string; warn?: boolean }) {
       <span className="text-[#666666] text-xs uppercase tracking-wider">{k}</span>
       <span className={warn ? "text-amber-400 font-medium text-right" : "text-[#f5f5f0] text-right"}>{v}</span>
     </div>
-  );
-}
-
-function ReportFormCTA() {
-  return (
-    <form action="/api/reports" method="post" className="flex flex-col sm:flex-row gap-3 max-w-xl">
-      <input
-        name="vin"
-        placeholder="Enter VIN (or rego + state)"
-        className="flex-1 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.1] text-[#f5f5f0] placeholder-[#666666] focus:outline-none focus:border-[#b8956e]/50"
-      />
-      <button
-        type="submit"
-        className="group inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-semibold transition-colors"
-      >
-        Run report — $19
-        <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-      </button>
-    </form>
   );
 }

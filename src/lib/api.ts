@@ -321,6 +321,79 @@ export async function getDealerAlerts(dealerId: string, narrate = false) {
   }>(`/api/insights/dealer/${encodeURIComponent(dealerId)}/alerts${q}`);
 }
 
+// ── Checkout (Stripe) ───────────────────────────────────────────────────────
+//
+// Two modes:
+//   1. One-off Vehicle Intelligence Report ($19) — no auth required.
+//   2. Subscription (watchlist / dealer_edge / inventory_iq / group) — requires
+//      an authenticated user, so the caller gets the checkout URL back only
+//      when the backend can identify them via cookie/JWT.
+//
+// Both helpers throw on failure (so the calling component can surface a
+// toast/error) rather than returning null — unlike the read helpers above,
+// silently degrading a payment flow would be confusing for the user.
+
+export interface ReportCheckoutInput {
+  vin?: string;
+  rego?: string;
+  state?: string;
+}
+
+export interface CheckoutResponse {
+  url: string;
+  sessionId: string;
+  reportId?: string;
+}
+
+function requireApiBase(): string {
+  if (!apiConfigured()) {
+    throw new Error(
+      "Checkout is not available right now — API base URL is not configured."
+    );
+  }
+  return API_BASE;
+}
+
+export async function startReportCheckout(
+  input: ReportCheckoutInput
+): Promise<CheckoutResponse> {
+  const base = requireApiBase();
+  const res = await fetch(`${base}/api/subscription/checkout/report`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Report checkout failed (${res.status}): ${text}`);
+  }
+  return (await res.json()) as CheckoutResponse;
+}
+
+export type SubscriptionTier =
+  | "watchlist"
+  | "dealer_edge"
+  | "inventory_iq"
+  | "group";
+
+export async function startSubscriptionCheckout(
+  tier: SubscriptionTier,
+  interval: "month" | "year"
+): Promise<CheckoutResponse> {
+  const base = requireApiBase();
+  const res = await fetch(`${base}/api/subscription/checkout`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ tier, interval }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Subscription checkout failed (${res.status}): ${text}`);
+  }
+  return (await res.json()) as CheckoutResponse;
+}
+
 // ── Health / diagnostics ────────────────────────────────────────────────────
 
 export async function apiHealth(): Promise<{

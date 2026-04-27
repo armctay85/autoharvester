@@ -419,6 +419,55 @@ export async function startGuestSubscriptionCheckout(
   return (await res.json()) as CheckoutResponse;
 }
 
+// ── Vehicle Intelligence Report read API ───────────────────────────────────
+
+export interface ReportSummary {
+  headline: 'clear' | 'caution' | 'do_not_buy';
+  reasons: string[];
+  market_value: { low: number; mid: number; high: number; basis: string; sample_size?: number };
+  registration: {
+    states_registered: string[];
+    state_transfer_count: number;
+    odometer_inconsistency: boolean;
+    last_known_km?: number;
+  };
+  recommended_action: string;
+  generated_at: string;
+}
+
+export interface ReportRecord {
+  id: string;
+  status: 'pending' | 'fetching' | 'ready' | 'failed' | 'refunded';
+  requested_vin: string | null;
+  requested_rego: string | null;
+  requested_state: string | null;
+  customer_email: string | null;
+  price_cents: number;
+  summary: ReportSummary | null;
+  ppsr_payload: any;
+  nevdis_payload: any;
+  market_value_payload: any;
+  email_sent_at: string | null;
+  created_at: string;
+  completed_at: string | null;
+  error_message: string | null;
+  pdf_url: string | null;
+  vehicle?: { make?: string; model?: string; year?: number };
+}
+
+export async function getReport(id: string): Promise<ReportRecord | null> {
+  const res = await fetchJson<{ success: boolean; report: ReportRecord }>(
+    `/api/reports/${encodeURIComponent(id)}`,
+  );
+  return res?.report ?? null;
+}
+
+export function reportPdfUrl(id: string, opts: { download?: boolean } = {}): string {
+  if (!apiConfigured()) return '';
+  const q = opts.download ? '?download=1' : '';
+  return `${API_BASE}/api/reports/${encodeURIComponent(id)}/pdf${q}`;
+}
+
 // ── Health / diagnostics ────────────────────────────────────────────────────
 
 export async function apiHealth(): Promise<{

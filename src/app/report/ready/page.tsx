@@ -75,17 +75,26 @@ export default async function ReportReadyPage({ searchParams }: Props) {
           )}
 
           <div className="flex flex-col sm:flex-row gap-3">
+            {report_id ? (
+              <Link
+                href={`/report/${report_id}`}
+                className="px-6 py-3 rounded-xl bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-semibold text-sm transition-colors"
+              >
+                View your report now
+              </Link>
+            ) : (
+              <Link
+                href="/pricing"
+                className="px-6 py-3 rounded-xl bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-semibold text-sm transition-colors"
+              >
+                Subscribe to Watchlist — $9/mo
+              </Link>
+            )}
             <Link
               href="/"
               className="px-6 py-3 rounded-xl border border-white/[0.15] text-sm font-medium hover:bg-white/5 transition-colors"
             >
               Back to home
-            </Link>
-            <Link
-              href="/pricing"
-              className="px-6 py-3 rounded-xl bg-[#b8956e] hover:bg-[#c9a67f] text-[#0a0a0a] font-semibold text-sm transition-colors"
-            >
-              Subscribe to Watchlist — $9/mo
             </Link>
           </div>
         </div>
